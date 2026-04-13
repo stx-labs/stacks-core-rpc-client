@@ -1,0 +1,47 @@
+{
+  "name": "@stacks/core-rpc-client",
+  "version": "0.1.0",
+  "description": "Typed JavaScript/TypeScript client for Stacks core RPC endpoints.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "npm run build:clean && npm run build:esm && npm run build:cjs",
+    "build:clean": "rm -rf dist",
+    "build:esm": "tsc -p tsconfig.build.esm.json",
+    "build:cjs": "tsc -p tsconfig.build.cjs.json && node ./scripts/write-cjs-package-json.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "generate": "node ./scripts/generate-client.mjs",
+    "generate:check": "node ./scripts/generate-client.mjs --check",
+    "test": "tsx --test ./test/**/*.test.ts",
+    "prepack": "npm run generate && npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.14.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.0",
+    "openapi-typescript": "^7.10.1",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.3"
+  }
+}

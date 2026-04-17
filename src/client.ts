@@ -1,5 +1,12 @@
 import createOpenApiClient, { type ClientOptions } from "openapi-fetch";
 import type { paths } from "./generated/schema.js";
+import type {
+  CoreRpcClient,
+  CoreRpcMethod,
+  CoreRpcPath,
+  CoreRpcResponse,
+  CoreRpcRawClient,
+} from "./types.js";
 
 const AUTH_REQUIRED_PATHS = new Set<string>([
   "/v2/contracts/call-read/{deployer_address}/{contract_name}/{function_name}",
@@ -19,7 +26,7 @@ function createRawClient(options: ClientOptions) {
   return createOpenApiClient<paths>(options);
 }
 
-export type CoreRpcRawClient = ReturnType<typeof createRawClient>;
+export type { CoreRpcClient, CoreRpcRawClient };
 
 export type CoreRpcClientOptions = {
   baseUrl?: string;
@@ -48,7 +55,10 @@ export class CoreRpcError extends Error {
   readonly method: string;
   readonly details: unknown;
 
-  constructor(message: string, init: { status: number; url: string; method: string; details: unknown }) {
+  constructor(
+    message: string,
+    init: { status: number; url: string; method: string; details: unknown },
+  ) {
     super(message);
     this.name = "CoreRpcError";
     this.status = init.status;
@@ -62,18 +72,23 @@ function isAuthRequired(schemaPath: string): boolean {
   return AUTH_REQUIRED_PATHS.has(schemaPath);
 }
 
-async function unwrap<TData, TError>(promise: Promise<RawResult<TData, TError>>): Promise<TData> {
+async function unwrap<TData, TError>(
+  promise: Promise<RawResult<TData, TError>>,
+): Promise<TData> {
   const result = await promise;
 
   if (!result.response.ok || result.error !== undefined) {
-    throw new CoreRpcError(`RPC request failed with status ${result.response.status}`, {
-      status: result.response.status,
-      url: result.response.url,
-      method: "unknown",
-      details: {
-        error: result.error ?? result.data,
+    throw new CoreRpcError(
+      `RPC request failed with status ${result.response.status}`,
+      {
+        status: result.response.status,
+        url: result.response.url,
+        method: "unknown",
+        details: {
+          error: result.error ?? result.data,
+        },
       },
-    });
+    );
   }
 
   if (result.data === undefined) {
@@ -88,7 +103,9 @@ async function unwrap<TData, TError>(promise: Promise<RawResult<TData, TError>>)
   return result.data as TData;
 }
 
-export function createCoreRpcClient(options: CoreRpcClientOptions = {}) {
+export function createCoreRpcClient(
+  options: CoreRpcClientOptions = {},
+): CoreRpcClient {
   const {
     baseUrl = "http://localhost:20443",
     authToken,
@@ -114,16 +131,28 @@ export function createCoreRpcClient(options: CoreRpcClientOptions = {}) {
 
   return {
     raw,
-    async request(method: "GET" | "POST" | "PUT" | "DELETE", path: string, init?: unknown) {
+    request<TMethod extends CoreRpcMethod, TPath extends CoreRpcPath<TMethod>>(
+      method: TMethod,
+      path: TPath,
+      init?: unknown,
+    ): Promise<CoreRpcResponse<TMethod, TPath>> {
       switch (method) {
         case "GET":
-          return unwrap(raw.GET(path as never, init as never));
+          return unwrap(raw.GET(path as never, init as never)) as Promise<
+            CoreRpcResponse<TMethod, TPath>
+          >;
         case "POST":
-          return unwrap(raw.POST(path as never, init as never));
+          return unwrap(raw.POST(path as never, init as never)) as Promise<
+            CoreRpcResponse<TMethod, TPath>
+          >;
         case "PUT":
-          return unwrap(raw.PUT(path as never, init as never));
+          return unwrap(raw.PUT(path as never, init as never)) as Promise<
+            CoreRpcResponse<TMethod, TPath>
+          >;
         case "DELETE":
-          return unwrap(raw.DELETE(path as never, init as never));
+          return unwrap(raw.DELETE(path as never, init as never)) as Promise<
+            CoreRpcResponse<TMethod, TPath>
+          >;
       }
     },
   };

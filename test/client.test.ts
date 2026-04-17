@@ -1,6 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CoreRpcError, createCoreRpcClient } from "../src/index.js";
+import type { BlockReplay, CoreRpcResponse } from "../src/index.js";
+
+type Assert<T extends true> = T;
+type IsEqual<TLeft, TRight> =
+  (<T>() => T extends TLeft ? 1 : 2) extends (<T>() => T extends TRight ? 1 : 2) ? true : false;
+type _BlockReplayResponseIsSchema = Assert<
+  IsEqual<CoreRpcResponse<"GET", "/v3/blocks/replay/{block_id}">, BlockReplay>
+>;
 
 test("adds auth header only for authenticated endpoints", async () => {
   const requests: Request[] = [];

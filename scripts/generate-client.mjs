@@ -1,13 +1,23 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import openapiTS, { astToString } from "openapi-typescript";
 
 const SPEC_SHA = "d7f37b5388b490427d6705e17a9b016aee8fccb0";
-const SPEC_URL =
+const SPEC_SOURCE =
   process.env.STACKS_RPC_OPENAPI_URL ??
   `https://raw.githubusercontent.com/stacks-network/stacks-core/${SPEC_SHA}/docs/rpc/openapi.yaml`;
+const SPEC_URL = toSpecUrl(SPEC_SOURCE);
 const OUTPUT_PATH = resolve("src/generated/schema.ts");
 const CHECK_MODE = process.argv.includes("--check");
+
+function toSpecUrl(source) {
+  try {
+    return new URL(source);
+  } catch {
+    return pathToFileURL(resolve(source));
+  }
+}
 
 function withBanner(content) {
   return [
@@ -20,7 +30,7 @@ function withBanner(content) {
 }
 
 async function generateSchemaTypes() {
-  const ast = await openapiTS(new URL(SPEC_URL), {
+  const ast = await openapiTS(SPEC_URL, {
     alphabetize: false,
     defaultNonNullable: false,
   });

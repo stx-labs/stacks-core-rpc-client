@@ -1,6 +1,6 @@
 /* eslint-disable */
 // This file is generated. Do not edit by hand.
-// Source: https://raw.githubusercontent.com/stacks-network/stacks-core/d7f37b5388b490427d6705e17a9b016aee8fccb0/docs/rpc/openapi.yaml
+// Source: file:///Users/rafael/src/stacks-core/docs/rpc/openapi.yaml
 
 export interface paths {
     "/v2/transactions": {
@@ -1304,6 +1304,7 @@ export interface components {
         NodeInfo: components["schemas"]["node-info.schema"];
         PoxInfo: components["schemas"]["pox-info.schema"];
         Sortitions: components["schemas"]["sortitions.schema"];
+        Sortition: components["schemas"]["sortition.schema"];
         GetHealth: components["schemas"]["get-health.schema"];
         AccountData: components["schemas"]["account-data.schema"];
         TransactionSubmissionError: components["schemas"]["transaction-submission-error.schema"];
@@ -1318,6 +1319,21 @@ export interface components {
         ClarityMetadata: components["schemas"]["clarity-metadata.schema"];
         ConstantValue: components["schemas"]["constant-value.schema"];
         IsTraitImplemented: components["schemas"]["is-trait-implemented.schema"];
+        BlockReplay: components["schemas"]["block-replay.schema"];
+        BlockReplayTransaction: components["schemas"]["block-replay-transaction.schema"];
+        BlockReplayTransactionEvent: components["schemas"]["block-replay-transaction-event.schema"];
+        BlockReplayTransactionStxTransferEvent: components["schemas"]["block-replay-transaction-stx-transfer-event.schema"];
+        BlockReplayTransactionStxBurnEvent: components["schemas"]["block-replay-transaction-stx-burn-event.schema"];
+        BlockReplayTransactionStxLockEvent: components["schemas"]["block-replay-transaction-stx-lock-event.schema"];
+        BlockReplayTransactionStxMintEvent: components["schemas"]["block-replay-transaction-stx-mint-event.schema"];
+        BlockReplayTransactionFtMintEvent: components["schemas"]["block-replay-transaction-ft-mint-event.schema"];
+        BlockReplayTransactionFtTransferEvent: components["schemas"]["block-replay-transaction-ft-transfer-event.schema"];
+        BlockReplayTransactionFtBurnEvent: components["schemas"]["block-replay-transaction-ft-burn-event.schema"];
+        BlockReplayTransactionNftMintEvent: components["schemas"]["block-replay-transaction-nft-mint-event.schema"];
+        BlockReplayTransactionNftTransferEvent: components["schemas"]["block-replay-transaction-nft-transfer-event.schema"];
+        BlockReplayTransactionNftBurnEvent: components["schemas"]["block-replay-transaction-nft-burn-event.schema"];
+        BlockReplayTransactionContractEvent: components["schemas"]["block-replay-transaction-contract-event.schema"];
+        ClarityType: components["schemas"]["clarity-type.schema"];
         SignerBlocksSigned: components["schemas"]["signer-blocks-signed.schema"];
         UnconfirmedTransaction: components["schemas"]["unconfirmed-transaction.schema"];
         BlockUploadResponse: components["schemas"]["block-upload-response.schema"];
@@ -1331,6 +1347,7 @@ export interface components {
         BlockHeaders: components["schemas"]["block-headers.schema"];
         BlockProposalResponse: components["schemas"]["block-proposal.schema"];
         NetworkPeers: components["schemas"]["network-peers.schema"];
+        RPCNeighbor: components["schemas"]["rpc-neighbor.schema"];
         TransactionInfo: components["schemas"]["get-transaction.schema"];
         TenureForkInfo: components["schemas"]["tenure-fork-info.schema"];
         TenureInfo: components["schemas"]["tenure-info.schema"];
@@ -1338,7 +1355,7 @@ export interface components {
         TenureTipMetadata: components["schemas"]["tenure-tip-metadata.schema"];
         GetStackerSet: components["schemas"]["get-stacker-set.schema"];
         TenureBlocks: components["schemas"]["tenure-blocks.schema"];
-        BlockReplay: components["schemas"]["block-replay.schema"];
+        ExecutionCost: components["schemas"]["execution-cost.schema"];
         /** @description Describes a transaction submission error response */
         "transaction-submission-error.schema": {
             /** @description The error */
@@ -1363,10 +1380,10 @@ export interface components {
          */
         "standard-principal.schema": string;
         /** @description Represents a Clarity type. It can be a simple string for primitive types or a nested object for complex types like lists and tuples. */
-        ClarityType: string | {
+        "clarity-type.schema": string | {
             list: {
                 /** @description Type of list elements */
-                type: components["schemas"]["ClarityType"];
+                type: components["schemas"]["clarity-type.schema"];
                 /** @description Fixed length for list types */
                 length?: number;
             };
@@ -1375,18 +1392,18 @@ export interface components {
                 /** @description Field name in the tuple */
                 name: string;
                 /** @description Type of the tuple field */
-                type: components["schemas"]["ClarityType"];
+                type: components["schemas"]["clarity-type.schema"];
             }[];
         } | {
             response: {
                 /** @description Success type */
-                ok: components["schemas"]["ClarityType"];
+                ok: components["schemas"]["clarity-type.schema"];
                 /** @description Error type */
-                error: components["schemas"]["ClarityType"];
+                error: components["schemas"]["clarity-type.schema"];
             };
         } | {
             /** @description Wrapped optional type */
-            optional: components["schemas"]["ClarityType"];
+            optional: components["schemas"]["clarity-type.schema"];
         } | {
             buffer: {
                 /** @description Fixed length for buffer types */
@@ -1412,24 +1429,24 @@ export interface components {
                 access: "public" | "private" | "read_only";
                 args: {
                     name: string;
-                    type: components["schemas"]["ClarityType"];
+                    type: components["schemas"]["clarity-type.schema"];
                 }[];
                 outputs: {
-                    type: components["schemas"]["ClarityType"];
+                    type: components["schemas"]["clarity-type.schema"];
                 };
             }[];
             /** @description List of defined constants */
             variables: {
                 name: string;
-                type: components["schemas"]["ClarityType"];
+                type: components["schemas"]["clarity-type.schema"];
                 /** @enum {string} */
                 access: "constant" | "variable";
             }[];
             /** @description List of defined data-maps */
             maps: {
                 name: string;
-                key: components["schemas"]["ClarityType"];
-                value: components["schemas"]["ClarityType"];
+                key: components["schemas"]["clarity-type.schema"];
+                value: components["schemas"]["clarity-type.schema"];
             }[];
             /** @description List of fungible tokens in the contract */
             fungible_tokens: {
@@ -1438,7 +1455,7 @@ export interface components {
             /** @description List of non-fungible tokens in the contract */
             non_fungible_tokens: {
                 name: string;
-                type: components["schemas"]["ClarityType"];
+                type: components["schemas"]["clarity-type.schema"];
             }[];
             /** @description Stacks epoch identifier (e.g., "Epoch30"). */
             epoch: string;
@@ -1447,49 +1464,6 @@ export interface components {
              * @enum {string}
              */
             clarity_version: "Clarity1" | "Clarity2" | "Clarity3";
-            $defs: {
-                /** @description Represents a Clarity type. It can be a simple string for primitive types or a nested object for complex types like lists and tuples. */
-                ClarityType: string | {
-                    list: {
-                        /** @description Type of list elements */
-                        type: components["schemas"]["ClarityType"];
-                        /** @description Fixed length for list types */
-                        length?: number;
-                    };
-                } | {
-                    tuple: {
-                        /** @description Field name in the tuple */
-                        name: string;
-                        /** @description Type of the tuple field */
-                        type: components["schemas"]["ClarityType"];
-                    }[];
-                } | {
-                    response: {
-                        /** @description Success type */
-                        ok: components["schemas"]["ClarityType"];
-                        /** @description Error type */
-                        error: components["schemas"]["ClarityType"];
-                    };
-                } | {
-                    /** @description Wrapped optional type */
-                    optional: components["schemas"]["ClarityType"];
-                } | {
-                    buffer: {
-                        /** @description Fixed length for buffer types */
-                        length: number;
-                    };
-                } | {
-                    "string-ascii": {
-                        /** @description Maximum number of characters (ASCII) */
-                        length: number;
-                    };
-                } | {
-                    "string-utf8": {
-                        /** @description Maximum number of code-points (UTF-8) */
-                        length: number;
-                    };
-                };
-            };
         };
         /**
          * @description A valid Clarity name. Must either:
@@ -1560,15 +1534,16 @@ export interface components {
             transaction_payload: string;
             estimated_len?: number;
         };
+        "execution-cost.schema": {
+            read_count: number;
+            read_length: number;
+            runtime: number;
+            write_count: number;
+            write_length: number;
+        };
         /** @description POST response for estimated fee */
         "fee-transaction-response.schema": {
-            estimated_cost: {
-                read_count: number;
-                read_length: number;
-                runtime: number;
-                write_count: number;
-                write_length: number;
-            };
+            estimated_cost: components["schemas"]["execution-cost.schema"];
             estimated_cost_scalar: number;
             cost_scalar_change_by_byte: number;
             estimations: {
@@ -1642,16 +1617,16 @@ export interface components {
              *     microblock has been processed for the current block, a 000.., hex array is
              *     returned.
              */
-            unanchored_tip?: string | null;
+            unanchored_tip: string | null;
             /** @description The sequence number of the latest microblock if any microblocks were processed. */
-            unanchored_seq?: number | null;
+            unanchored_seq: number | null;
             /** @description The latest Stacks tenure height. */
             tenure_height: number;
             /**
              * @description The block height at which a testnet network will be reset.
              *     Not applicable to mainnet.
              */
-            exit_at_block_height?: number | null;
+            exit_at_block_height: number | null;
             /** @description Indicates whether the node has fully synchronized with the network. */
             is_fully_synced: boolean;
             /** @description The node's public key. */
@@ -1748,13 +1723,7 @@ export interface components {
                 epoch_id: string;
                 start_height: number;
                 end_height: number;
-                block_limit: {
-                    read_count: number;
-                    read_length: number;
-                    write_count: number;
-                    write_length: number;
-                    runtime: number;
-                };
+                block_limit: components["schemas"]["execution-cost.schema"];
                 network_epoch: number;
             }[];
         };
@@ -1859,7 +1828,7 @@ export interface components {
             }[];
         };
         /** @description Information about a burnchain sortition event */
-        Sortition: {
+        "sortition.schema": {
             /** @description The burnchain header hash of the block that triggered this event */
             burn_block_hash: string;
             /** @description The burn height of the block that triggered this event */
@@ -1886,7 +1855,7 @@ export interface components {
             vrf_seed?: string | null;
         };
         /** @description Array of sortition information objects from the burnchain */
-        "sortitions.schema": components["schemas"]["Sortition"][];
+        "sortitions.schema": components["schemas"]["sortition.schema"][];
         "signer-blocks-signed.schema": {
             /** @description Number of blocks signed by this signer */
             blocks_signed: number;
@@ -1986,7 +1955,7 @@ export interface components {
             parent_block_id: string;
         }[];
         /** @description A peer in the network */
-        RPCNeighbor: {
+        "rpc-neighbor.schema": {
             /** @description The network ID of the peer. */
             network_id: number;
             /** @description The peer version. */
@@ -2013,40 +1982,13 @@ export interface components {
         /** @description Information about the node's neighbor peers in the network. */
         "network-peers.schema": {
             /** @description List of bootstrap peers known to the node. */
-            bootstrap: components["schemas"]["RPCNeighbor"][];
+            bootstrap: components["schemas"]["rpc-neighbor.schema"][];
             /** @description List of a sample of gossiped peers. */
-            sample: components["schemas"]["RPCNeighbor"][];
+            sample: components["schemas"]["rpc-neighbor.schema"][];
             /** @description List of inbound peer connections. */
-            inbound: components["schemas"]["RPCNeighbor"][];
+            inbound: components["schemas"]["rpc-neighbor.schema"][];
             /** @description List of outbound peer connections. */
-            outbound: components["schemas"]["RPCNeighbor"][];
-            $defs: {
-                /** @description A peer in the network */
-                RPCNeighbor: {
-                    /** @description The network ID of the peer. */
-                    network_id: number;
-                    /** @description The peer version. */
-                    peer_version: number;
-                    /**
-                     * Format: ip
-                     * @description The IP address of the peer.
-                     */
-                    ip: string;
-                    /** @description The port number of the peer. */
-                    port: number;
-                    /** @description The HASH160 of the peer's public key. */
-                    public_key_hash: string;
-                    /** @description Whether the peer connection is authenticated. */
-                    authenticated: boolean;
-                    /** @description List of StackerDBs the peer supports, represented as qualified contract identifiers. */
-                    stackerdbs?: string[] | null;
-                    /**
-                     * Format: int64
-                     * @description The age of the peer connection in seconds.
-                     */
-                    age?: number | null;
-                };
-            };
+            outbound: components["schemas"]["rpc-neighbor.schema"][];
         };
         /** @description Information about a tenure used for fork-detection. */
         "tenure-fork-info.schema": {
@@ -2209,55 +2151,227 @@ export interface components {
             /** @description Whether the block was accepted */
             accepted?: boolean;
         };
+        "block-replay-transaction-stx-transfer-event.schema": {
+            committed: boolean;
+            event_index: number;
+            stx_transfer_event: {
+                amount: string;
+                memo: string;
+                recipient: string;
+                sender: string;
+            };
+            txid: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "stx_transfer_event";
+        };
+        "block-replay-transaction-stx-burn-event.schema": {
+            committed: boolean;
+            event_index: number;
+            stx_burn_event: {
+                amount: string;
+                sender: string;
+            };
+            txid: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "stx_burn_event";
+        };
+        "block-replay-transaction-stx-lock-event.schema": {
+            committed: boolean;
+            event_index: number;
+            stx_lock_event: {
+                contract_identifier: string;
+                locked_address: string;
+                locked_amount: string;
+                unlock_height: string;
+            };
+            txid: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "stx_lock_event";
+        };
+        "block-replay-transaction-stx-mint-event.schema": {
+            committed: boolean;
+            event_index: number;
+            stx_mint_event: {
+                amount: string;
+                recipient: string;
+            };
+            txid: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "stx_mint_event";
+        };
+        "block-replay-transaction-ft-mint-event.schema": {
+            committed: boolean;
+            event_index: number;
+            ft_mint_event: {
+                amount: string;
+                asset_identifier: string;
+                recipient: string;
+            };
+            txid: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "ft_mint_event";
+        };
+        "block-replay-transaction-ft-transfer-event.schema": {
+            committed: boolean;
+            event_index: number;
+            ft_transfer_event: {
+                amount: string;
+                asset_identifier: string;
+                recipient: string;
+                sender: string;
+            };
+            txid: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "ft_transfer_event";
+        };
+        "block-replay-transaction-ft-burn-event.schema": {
+            committed: boolean;
+            event_index: number;
+            ft_burn_event: {
+                amount: string;
+                asset_identifier: string;
+                sender: string;
+            };
+            txid: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "ft_burn_event";
+        };
+        "block-replay-transaction-nft-mint-event.schema": {
+            committed: boolean;
+            event_index: number;
+            nft_mint_event: {
+                asset_identifier: string;
+                raw_value: string;
+                recipient: string;
+            };
+            txid: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "nft_mint_event";
+        };
+        "block-replay-transaction-nft-transfer-event.schema": {
+            committed: boolean;
+            event_index: number;
+            nft_transfer_event: {
+                asset_identifier: string;
+                raw_value: string;
+                recipient: string;
+                sender: string;
+            };
+            txid: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "nft_transfer_event";
+        };
+        "block-replay-transaction-nft-burn-event.schema": {
+            committed: boolean;
+            event_index: number;
+            nft_burn_event: {
+                asset_identifier: string;
+                raw_value: string;
+                sender: string;
+            };
+            txid: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "nft_burn_event";
+        };
+        "block-replay-transaction-contract-event.schema": {
+            committed: boolean;
+            contract_event: {
+                contract_identifier: string;
+                raw_value: string;
+                topic: string;
+            };
+            event_index: number;
+            txid: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "contract_event";
+        };
+        "block-replay-transaction-event.schema": components["schemas"]["block-replay-transaction-stx-transfer-event.schema"] | components["schemas"]["block-replay-transaction-stx-burn-event.schema"] | components["schemas"]["block-replay-transaction-stx-lock-event.schema"] | components["schemas"]["block-replay-transaction-stx-mint-event.schema"] | components["schemas"]["block-replay-transaction-ft-mint-event.schema"] | components["schemas"]["block-replay-transaction-ft-transfer-event.schema"] | components["schemas"]["block-replay-transaction-ft-burn-event.schema"] | components["schemas"]["block-replay-transaction-nft-mint-event.schema"] | components["schemas"]["block-replay-transaction-nft-transfer-event.schema"] | components["schemas"]["block-replay-transaction-nft-burn-event.schema"] | components["schemas"]["block-replay-transaction-contract-event.schema"];
+        "block-replay-transaction.schema": {
+            /** @description JSON representation of the transaction payload */
+            data: Record<string, never> | null;
+            events: components["schemas"]["block-replay-transaction-event.schema"][];
+            execution_cost: components["schemas"]["execution-cost.schema"];
+            /** @description hexadecimal representation of the transaction body */
+            hex: string;
+            /** @description The transaction's result, encoded as a Clarity hex string */
+            result_hex: string;
+            /** @description Whether the transaction was aborted by a post-condition */
+            post_condition_aborted: boolean;
+            /** @description number of burned stx */
+            stx_burned: number;
+            /** @description index of the transaction in the array of transactions */
+            tx_index: number;
+            /** @description transaction id */
+            txid: string;
+            /** @description optional vm error (for runtime failures) */
+            vm_error: string | null;
+            /** @description number of instructions executed */
+            cpu_instructions: number | null;
+            /** @description number of cycles executed */
+            cpu_cycles: number | null;
+            /** @description number of reference cycles executed */
+            cpu_ref_cycles: number | null;
+        };
         "block-replay.schema": {
             /** @description Hash of the block */
-            block_hash?: string;
+            block_hash: string;
             /** @description Block ID (index block hash) */
-            block_id?: string;
+            block_id: string;
             /**
              * Format: uint64
              * @description Height of the Stacks block
              */
-            block_height?: number;
+            block_height: number;
             /** @description Consensus hash of the tenure */
-            consensus_hash?: string;
+            consensus_hash: string;
             /** @description total fees for the block */
-            fees?: number;
+            fees: number;
             /** @description Uncompressed signature of the miner */
-            miner_signature?: string;
+            miner_signature: string;
             /** @description Parent Block ID (index block hash) */
-            parent_block_id?: string;
-            signer_signature?: string[];
+            parent_block_id: string;
+            signer_signature: string[];
             /** @description block state index root computed from the MARF (got from the original block) */
-            state_index_root?: string;
-            timestamp?: number;
+            state_index_root: string;
+            timestamp: number;
             /** @description merkle_root of the included transactions */
-            tx_merkle_root?: string;
+            tx_merkle_root: string;
             /** @description does the merkle_root matches the chain block and the simulated one? */
-            valid_merkle_root?: boolean;
-            transactions?: {
-                /** @description JSON representation of the transaction payload */
-                data?: Record<string, never>;
-                events?: Record<string, never>[];
-                /** @description costs accounting for the transaction */
-                execution_cost?: Record<string, never>;
-                /** @description hexadecimal representation of the transaction body */
-                hex?: string;
-                /** @description Clarity value representing the transaction result */
-                result?: Record<string, never>;
-                /** @description The transaction's result, encoded as a Clarity hex string */
-                result_hex?: string;
-                /** @description Whether the transaction was aborted by a post-condition */
-                post_condition_aborted?: boolean;
-                /** @description number of burned stx */
-                stx_burned?: number;
-                /** @description index of the transaction in the array of transactions */
-                tx_index?: number;
-                /** @description transaction id */
-                txid?: string;
-                /** @description optional vm error (for runtime failures) */
-                vm_error?: string | null;
-            }[];
+            valid_merkle_root: boolean;
+            transactions: components["schemas"]["block-replay-transaction.schema"][];
         };
     };
     responses: {
@@ -2340,7 +2454,7 @@ export interface components {
          *     - `latest`: Use latest known tip including unconfirmed microblocks.
          *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
          *       If the unconfirmed state check fails with an error, returns 404.
-         *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+         *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
          *
          *     **Note:** If `tip` is present but contains an invalid or malformed value
          *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -2428,7 +2542,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -2482,7 +2596,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -2542,7 +2656,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -2591,7 +2705,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -2645,7 +2759,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -2707,7 +2821,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -2830,7 +2944,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -2867,7 +2981,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -2926,7 +3040,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -2965,7 +3079,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -3021,7 +3135,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -3134,7 +3248,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -3227,7 +3341,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -3970,7 +4084,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -4020,7 +4134,7 @@ export interface operations {
                  *     - `latest`: Use latest known tip including unconfirmed microblocks.
                  *       If no unconfirmed state is available, falls back to the confirmed canonical tip.
                  *       If the unconfirmed state check fails with an error, returns 404.
-                 *     - `{block_id}`: Use specific block ID (64 hex characters, case-insensitive)
+                 *     - `{block_id}`: Use specific block ID (64 lowercase hex characters)
                  *
                  *     **Note:** If `tip` is present but contains an invalid or malformed value
                  *     (i.e., not `latest` and not a valid 64-character hex block ID),
@@ -4447,14 +4561,6 @@ export interface operations {
                      *               "write_length": 0
                      *             },
                      *             "hex": "808000000004002965a4e6e4226868fa3ae88b2b9bb9e937d77fba000000000000006300000000000000010001e29229b386e1f69ffd91e339c878246235ec1cd4771b42a7f45e1ed108643bc9417d43dd96a02c93314ef4cf5bcbcc5642df2e1f5a177333ff983c8719d8066101020000000000051abd41c893bcc09d98e0d34dff87beaf9958338cde000000000000000100000000000000000000000000000000000000000000000000000000000000000000",
-                     *             "result": {
-                     *               "Response": {
-                     *                 "committed": true,
-                     *                 "data": {
-                     *                   "Bool": true
-                     *                 }
-                     *               }
-                     *             },
                      *             "result_hex": "0x0703",
                      *             "post_condition_aborted": false,
                      *             "stx_burned": 0,
@@ -4463,7 +4569,11 @@ export interface operations {
                      *           }
                      *         ],
                      *         "tx_merkle_root": "a68e3c76471d9e66b71a14165c4c9a2b980c51efb5b313425cffcef7172d6080",
-                     *         "valid_merkle_root": true
+                     *         "valid_merkle_root": true,
+                     *         "vm_error": null,
+                     *         "cpu_instructions": null,
+                     *         "cpu_cycles": null,
+                     *         "cpu_ref_cycles": null
                      *       }
                      *     }
                      */

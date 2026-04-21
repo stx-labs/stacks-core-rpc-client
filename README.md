@@ -15,7 +15,7 @@ npm install @stacks/core-rpc-client
 - Runtime support: Node `>=22`
 - Local development baseline: Node `24`
 
-## Usage (ESM)
+## Quick Start
 
 ```ts
 import { createCoreRpcClient } from "@stacks/core-rpc-client";
@@ -26,7 +26,138 @@ const client = createCoreRpcClient({
 });
 
 const info = await client.request("GET", "/v2/info");
-console.log(info);
+console.log(info.stacks_tip_height);
+```
+
+## Usage with `@stacks/network`
+
+`createCoreRpcClient` accepts a `@stacks/network` instance directly, so you can
+reuse an existing network configuration without duplicating the base URL or
+custom fetch:
+
+```ts
+import { createCoreRpcClient } from "@stacks/core-rpc-client";
+import { STACKS_TESTNET } from "@stacks/network";
+
+const client = createCoreRpcClient(STACKS_TESTNET);
+const info = await client.request("GET", "/v2/info");
+```
+
+A second `overrides` argument lets you layer on options like `authToken` while
+still deriving everything else from the network:
+
+```ts
+const client = createCoreRpcClient(STACKS_TESTNET, {
+  authToken: process.env.STACKS_RPC_AUTH_TOKEN,
+});
+```
+
+## Example RPC Calls
+
+Every call through `client.request()` is fully typed — the path autocompletes
+and the return type matches the OpenAPI schema.
+
+### Get node info
+
+```ts
+const info = await client.request("GET", "/v2/info");
+// info is typed as NodeInfo
+console.log(info.stacks_tip_height, info.burn_block_height);
+```
+
+### Get PoX details
+
+```ts
+const pox = await client.request("GET", "/v2/pox");
+// pox is typed as PoxInfo
+console.log(pox.reward_cycle_length, pox.next_cycle);
+```
+
+### Fetch account data
+
+```ts
+const account = await client.request("GET", "/v2/accounts/{address}", {
+  params: { path: { address: "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7" } },
+});
+// account is typed as AccountData
+console.log(account.balance, account.nonce);
+```
+
+### Call a read-only contract function (authenticated)
+
+```ts
+const result = await client.request(
+  "POST",
+  "/v2/contracts/call-read/{deployer_address}/{contract_name}/{function_name}",
+  {
+    params: {
+      path: {
+        deployer_address: "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7",
+        contract_name: "my-contract",
+        function_name: "get-balance",
+      },
+    },
+    body: { sender: "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7", arguments: [] },
+  },
+);
+// result is typed as ReadOnlyFunctionResult
+console.log(result.okay, result.result);
+```
+
+## Using Exported Types
+
+All response schemas are re-exported as named types so you can annotate your own
+code without reaching into the generated schema:
+
+```ts
+import type { NodeInfo, PoxInfo, AccountData } from "@stacks/core-rpc-client";
+
+function summarize(info: NodeInfo, pox: PoxInfo): string {
+  return `tip=${info.stacks_tip_height} cycle=${pox.reward_cycle_id}`;
+}
+```
+
+You can also derive the response type for any endpoint using `CoreRpcResponse`:
+
+```ts
+import type { CoreRpcResponse } from "@stacks/core-rpc-client";
+
+type PoxResponse = CoreRpcResponse<"GET", "/v2/pox">;
+```
+
+## Error Handling
+
+Failed requests throw a `CoreRpcError` with structured metadata:
+
+```ts
+import { CoreRpcError, createCoreRpcClient } from "@stacks/core-rpc-client";
+
+const client = createCoreRpcClient();
+
+try {
+  await client.request("POST", "/v3/block_proposal", { body: {} });
+} catch (error) {
+  if (error instanceof CoreRpcError) {
+    console.error(error.status); // HTTP status code
+    console.error(error.url);    // request URL
+    console.error(error.details); // parsed error body
+  }
+}
+```
+
+## Auth Behavior
+
+`authToken` is attached to the `authorization` header only for RPC endpoints
+that declare `rpcAuth` in the spec.
+
+## Raw Client Access
+
+When you need full control over the response (headers, streaming, middleware),
+use `client.raw` — the underlying `openapi-fetch` client:
+
+```ts
+const { data, error, response } = await client.raw.GET("/v2/info");
+console.log(response.headers.get("x-request-id"));
 ```
 
 ## Usage (CJS)
@@ -40,10 +171,6 @@ const client = createCoreRpcClient({
 
 client.request("GET", "/v2/info").then(console.log);
 ```
-
-## Auth Behavior
-
-`authToken` is attached to the `authorization` header only for RPC endpoints that declare `rpcAuth` in the spec.
 
 ## Generation Workflow
 

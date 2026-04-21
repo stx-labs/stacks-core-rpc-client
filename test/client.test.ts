@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CoreRpcError, createCoreRpcClient } from "../src/index.js";
-import type { BlockReplay, CoreRpcResponse } from "../src/index.js";
+import type { BlockReplay, CoreRpcResponse, StacksNetworkLike } from "../src/index.js";
 
 type Assert<T extends true> = T;
 type IsEqual<TLeft, TRight> =
@@ -32,6 +32,73 @@ test("adds auth header only for authenticated endpoints", async () => {
 
   assert.equal(requests[0]?.headers.get("authorization"), "secret-token");
   assert.equal(requests[1]?.headers.get("authorization"), null);
+});
+
+test("accepts a StacksNetworkLike object and uses its baseUrl", async () => {
+  const requests: Request[] = [];
+  const fetchMock: typeof globalThis.fetch = async (input, init) => {
+    const request = input instanceof Request ? input : new Request(input, init);
+    requests.push(request);
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  };
+
+  const network: StacksNetworkLike = {
+    client: { baseUrl: "https://api.testnet.hiro.so" },
+  };
+
+  const client = createCoreRpcClient(network, { fetch: fetchMock });
+  await client.request("GET", "/v2/info");
+
+  assert.ok(requests[0]?.url.startsWith("https://api.testnet.hiro.so"));
+});
+
+test("uses fetch from StacksNetworkLike when no override is given", async () => {
+  const requests: Request[] = [];
+  const networkFetch: typeof globalThis.fetch = async (input, init) => {
+    const request = input instanceof Request ? input : new Request(input, init);
+    requests.push(request);
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  };
+
+  const network: StacksNetworkLike = {
+    client: { baseUrl: "https://api.testnet.hiro.so", fetch: networkFetch },
+  };
+
+  const client = createCoreRpcClient(network);
+  await client.request("GET", "/v2/info");
+
+  assert.equal(requests.length, 1);
+  assert.ok(requests[0]?.url.startsWith("https://api.testnet.hiro.so"));
+});
+
+test("overrides authToken works with StacksNetworkLike", async () => {
+  const requests: Request[] = [];
+  const fetchMock: typeof globalThis.fetch = async (input, init) => {
+    const request = input instanceof Request ? input : new Request(input, init);
+    requests.push(request);
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  };
+
+  const network: StacksNetworkLike = {
+    client: { baseUrl: "https://api.testnet.hiro.so" },
+  };
+
+  const client = createCoreRpcClient(network, {
+    authToken: "my-token",
+    fetch: fetchMock,
+  });
+
+  await client.request("POST", "/v3/block_proposal", { body: {} });
+  assert.equal(requests[0]?.headers.get("authorization"), "my-token");
 });
 
 test("throws CoreRpcError with parsed details on HTTP error", async () => {

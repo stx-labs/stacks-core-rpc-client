@@ -4,6 +4,7 @@ export type {
   CoreRpcClient,
   CoreRpcClientOptions,
   CoreRpcRawClient,
+  StacksNetworkLike,
 } from "./client.js";
 export type { components, paths } from "./generated/schema.js";
 export type * from "./types.js";

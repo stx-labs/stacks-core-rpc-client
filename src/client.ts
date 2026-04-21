@@ -28,12 +28,26 @@ function createRawClient(options: ClientOptions) {
 
 export type { CoreRpcClient, CoreRpcRawClient };
 
+export type StacksNetworkLike = {
+  client: { baseUrl: string; fetch?: typeof globalThis.fetch };
+};
+
 export type CoreRpcClientOptions = {
   baseUrl?: string;
   authToken?: string;
   fetch?: typeof globalThis.fetch;
   headers?: HeadersInit;
 };
+
+function isStacksNetworkLike(value: unknown): value is StacksNetworkLike {
+  if (typeof value !== "object" || value === null) return false;
+  const client = (value as Record<string, unknown>).client;
+  return (
+    typeof client === "object" &&
+    client !== null &&
+    typeof (client as Record<string, unknown>).baseUrl === "string"
+  );
+}
 
 export type BinaryBody = Uint8Array | ArrayBuffer | Buffer;
 
@@ -104,14 +118,26 @@ async function unwrap<TData, TError>(
 }
 
 export function createCoreRpcClient(
-  options: CoreRpcClientOptions = {},
+  networkOrOptions?: StacksNetworkLike | CoreRpcClientOptions,
+  overrides?: Omit<CoreRpcClientOptions, "baseUrl">,
 ): CoreRpcClient {
-  const {
-    baseUrl = "http://localhost:20443",
-    authToken,
-    fetch = globalThis.fetch,
-    headers = {},
-  } = options;
+  let baseUrl: string;
+  let authToken: string | undefined;
+  let fetch: typeof globalThis.fetch;
+  let headers: HeadersInit;
+
+  if (isStacksNetworkLike(networkOrOptions)) {
+    baseUrl = networkOrOptions.client.baseUrl;
+    authToken = overrides?.authToken;
+    fetch = overrides?.fetch ?? networkOrOptions.client.fetch ?? globalThis.fetch;
+    headers = overrides?.headers ?? {};
+  } else {
+    const options = networkOrOptions ?? {};
+    baseUrl = options.baseUrl ?? "http://localhost:20443";
+    authToken = options.authToken;
+    fetch = options.fetch ?? globalThis.fetch;
+    headers = options.headers ?? {};
+  }
 
   const raw = createRawClient({
     baseUrl,

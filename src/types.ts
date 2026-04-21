@@ -5,31 +5,81 @@ import type {
 } from "openapi-fetch";
 import type { components, paths } from "./generated/schema.js";
 
-export type CoreRpcComponentSchemas = components["schemas"];
-export type CoreRpcComponentSchemaName = keyof CoreRpcComponentSchemas;
-export type CoreRpcComponentSchema<TName extends CoreRpcComponentSchemaName> =
+type CoreRpcComponentSchemas = components["schemas"];
+type CoreRpcComponentSchemaName = keyof CoreRpcComponentSchemas;
+type CoreRpcComponentSchema<TName extends CoreRpcComponentSchemaName> =
   CoreRpcComponentSchemas[TName];
-
-export type CoreRpcRawClient = Client<paths, `${string}/${string}`>;
-export type CoreRpcMethod = "GET" | "POST" | "PUT" | "DELETE";
-export type ToHttpMethod<TMethod extends CoreRpcMethod> = TMethod extends "GET"
+type ToHttpMethod<TMethod extends CoreRpcMethod> = TMethod extends "GET"
   ? "get"
   : TMethod extends "POST"
     ? "post"
     : TMethod extends "PUT"
       ? "put"
       : "delete";
+
+/**
+ * A Stacks network like object. Used to create a Core RPC client from a Stacks network as used by
+ * `@stacks/network`.
+ */
+export type StacksNetworkLike = {
+  client: { baseUrl: string; fetch?: typeof globalThis.fetch };
+};
+
+/**
+ * Options for creating a Core RPC client.
+ */
+export type CoreRpcClientOptions = {
+  /** The base URL of the Stacks core RPC endpoint. */
+  baseUrl?: string;
+  /** The authentication token to use for the Stacks core RPC endpoint. */
+  authToken?: string;
+  /** The fetch function to use for the Stacks core RPC endpoint. */
+  fetch?: typeof globalThis.fetch;
+  /** The headers to use for the Stacks core RPC endpoint. */
+  headers?: HeadersInit;
+};
+
+/** A raw Core RPC client. */
+export type CoreRpcRawClient = Client<paths, `${string}/${string}`>;
+/** The HTTP method to use for a Core RPC request. */
+export type CoreRpcMethod = "GET" | "POST" | "PUT" | "DELETE";
+/** The path to request. */
 export type CoreRpcPath<TMethod extends CoreRpcMethod> = ClientPathsWithMethod<
   CoreRpcRawClient,
   ToHttpMethod<TMethod>
 >;
+/** The response payload for a Core RPC request. */
 export type CoreRpcResponse<
   TMethod extends CoreRpcMethod,
   TPath extends CoreRpcPath<TMethod>,
   TOptions = unknown,
 > = MethodResponse<CoreRpcRawClient, ToHttpMethod<TMethod>, TPath, TOptions>;
+
+/**
+ * A Stacks core RPC client.
+ *
+ * Use {@link CoreRpcClient.request | request} for the high-level API that automatically
+ * authenticates requests, unwraps responses and throws {@link CoreRpcError} on failure.
+ *
+ * Use {@link CoreRpcClient.raw | raw} when you need full control over the response (e.g. inspecting
+ * headers, custom error handling, streaming, or adding middleware via `raw.use(...)`).
+ */
 export type CoreRpcClient = {
+  /**
+   * The underlying `openapi-fetch` client.
+   *
+   * Unlike {@link CoreRpcClient.request | request}, calls made through `raw`
+   * return the full `{ data, error, response }` result, giving you direct
+   * access to the {@link Response} object, headers, status codes, and streams.
+   */
   raw: CoreRpcRawClient;
+  /**
+   * Sends an RPC request to Stacks core.
+   * @param method - The HTTP method to use.
+   * @param path - The path to request.
+   * @param init - The init object to use.
+   * @returns The typed response payload.
+   */
   request<TMethod extends CoreRpcMethod, TPath extends CoreRpcPath<TMethod>>(
     method: TMethod,
     path: TPath,

@@ -1,6 +1,6 @@
 /* eslint-disable */
 // This file is generated. Do not edit by hand.
-// Source: file:///Users/rafael/src/stacks-core/docs/rpc/openapi.yaml
+// Source: https://raw.githubusercontent.com/stacks-network/stacks-core/develop/docs/rpc/openapi.yaml
 
 export interface paths {
     "/v2/transactions": {

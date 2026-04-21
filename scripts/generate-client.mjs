@@ -1,12 +1,14 @@
+// Generates TypeScript types from the Stacks Core RPC OpenAPI spec into src/generated/schema.ts.
+// Pass --check to verify the file is up to date without overwriting (used in CI / prepack).
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import openapiTS, { astToString } from "openapi-typescript";
 
-const SPEC_SHA = "d7f37b5388b490427d6705e17a9b016aee8fccb0";
+const SPEC_REF = "develop";
 const SPEC_SOURCE =
   process.env.STACKS_RPC_OPENAPI_URL ??
-  `https://raw.githubusercontent.com/stacks-network/stacks-core/${SPEC_SHA}/docs/rpc/openapi.yaml`;
+  `https://raw.githubusercontent.com/stacks-network/stacks-core/${SPEC_REF}/docs/rpc/openapi.yaml`;
 const SPEC_URL = toSpecUrl(SPEC_SOURCE);
 const OUTPUT_PATH = resolve("src/generated/schema.ts");
 const CHECK_MODE = process.argv.includes("--check");

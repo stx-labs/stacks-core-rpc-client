@@ -1,12 +1,14 @@
-import createOpenApiClient, { type ClientOptions } from "openapi-fetch";
+import createOpenApiClient from "openapi-fetch";
 import type { paths } from "./generated/schema.js";
 import type {
   CoreRpcClient,
+  CoreRpcClientOptions,
   CoreRpcMethod,
   CoreRpcPath,
   CoreRpcResponse,
-  CoreRpcRawClient,
+  StacksNetworkLike,
 } from "./types.js";
+import { CoreRpcError } from "./errors.js";
 
 const AUTH_REQUIRED_PATHS = new Set<string>([
   "/v2/contracts/call-read/{deployer_address}/{contract_name}/{function_name}",
@@ -16,28 +18,9 @@ const AUTH_REQUIRED_PATHS = new Set<string>([
   "/v3/blocks/simulate/{block_id}",
 ]);
 
-type RawResult<TData, TError> = {
-  data?: TData;
-  error?: TError;
-  response: Response;
-};
-
-function createRawClient(options: ClientOptions) {
-  return createOpenApiClient<paths>(options);
+function isAuthRequired(schemaPath: string): boolean {
+  return AUTH_REQUIRED_PATHS.has(schemaPath);
 }
-
-export type { CoreRpcClient, CoreRpcRawClient };
-
-export type StacksNetworkLike = {
-  client: { baseUrl: string; fetch?: typeof globalThis.fetch };
-};
-
-export type CoreRpcClientOptions = {
-  baseUrl?: string;
-  authToken?: string;
-  fetch?: typeof globalThis.fetch;
-  headers?: HeadersInit;
-};
 
 function isStacksNetworkLike(value: unknown): value is StacksNetworkLike {
   if (typeof value !== "object" || value === null) return false;
@@ -49,42 +32,11 @@ function isStacksNetworkLike(value: unknown): value is StacksNetworkLike {
   );
 }
 
-export type BinaryBody = Uint8Array | ArrayBuffer | Buffer;
-
-export function toBinaryBody(input: BinaryBody): ArrayBuffer | Uint8Array {
-  if (input instanceof Uint8Array) {
-    return input;
-  }
-
-  if (typeof Buffer !== "undefined" && Buffer.isBuffer(input)) {
-    return input;
-  }
-
-  return input;
-}
-
-export class CoreRpcError extends Error {
-  readonly status: number;
-  readonly url: string;
-  readonly method: string;
-  readonly details: unknown;
-
-  constructor(
-    message: string,
-    init: { status: number; url: string; method: string; details: unknown },
-  ) {
-    super(message);
-    this.name = "CoreRpcError";
-    this.status = init.status;
-    this.url = init.url;
-    this.method = init.method;
-    this.details = init.details;
-  }
-}
-
-function isAuthRequired(schemaPath: string): boolean {
-  return AUTH_REQUIRED_PATHS.has(schemaPath);
-}
+type RawResult<TData, TError> = {
+  data?: TData;
+  error?: TError;
+  response: Response;
+};
 
 async function unwrap<TData, TError>(
   promise: Promise<RawResult<TData, TError>>,
@@ -117,6 +69,12 @@ async function unwrap<TData, TError>(
   return result.data as TData;
 }
 
+/**
+ * Creates a Core RPC client from a Stacks network or a set of options.
+ * @param networkOrOptions - A Stacks network or a set of options.
+ * @param overrides - Overrides for the default options.
+ * @returns A Core RPC client.
+ */
 export function createCoreRpcClient(
   networkOrOptions?: StacksNetworkLike | CoreRpcClientOptions,
   overrides?: Omit<CoreRpcClientOptions, "baseUrl">,
@@ -129,7 +87,8 @@ export function createCoreRpcClient(
   if (isStacksNetworkLike(networkOrOptions)) {
     baseUrl = networkOrOptions.client.baseUrl;
     authToken = overrides?.authToken;
-    fetch = overrides?.fetch ?? networkOrOptions.client.fetch ?? globalThis.fetch;
+    fetch =
+      overrides?.fetch ?? networkOrOptions.client.fetch ?? globalThis.fetch;
     headers = overrides?.headers ?? {};
   } else {
     const options = networkOrOptions ?? {};
@@ -139,7 +98,7 @@ export function createCoreRpcClient(
     headers = options.headers ?? {};
   }
 
-  const raw = createRawClient({
+  const raw = createOpenApiClient<paths>({
     baseUrl,
     fetch,
     headers,
@@ -147,10 +106,10 @@ export function createCoreRpcClient(
 
   raw.use({
     async onRequest({ request, schemaPath }) {
+      // Attach the `authToken` to the request headers for authenticated endpoints.
       if (authToken && isAuthRequired(schemaPath)) {
         request.headers.set("authorization", authToken);
       }
-
       return request;
     },
   });

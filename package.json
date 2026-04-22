@@ -1,6 +1,6 @@
 {
-  "name": "@stacks/core-rpc-client",
-  "version": "0.1.0",
+  "name": "@stacks/rpc-client",
+  "version": "1.0.0",
   "description": "Typed JavaScript/TypeScript client for Stacks core RPC endpoints.",
   "license": "MIT",
   "type": "module",

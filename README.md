@@ -52,6 +52,28 @@ const client = createCoreRpcClient(STACKS_TESTNET, {
 });
 ```
 
+## Custom Headers
+
+Use the `headers` option to attach an API key or any other custom headers to
+every outgoing request:
+
+```ts
+const client = createCoreRpcClient({
+  baseUrl: "https://api.hiro.so",
+  headers: {
+    "x-api-key": process.env.STACKS_API_KEY,
+  },
+});
+```
+
+This also works alongside `@stacks/network`:
+
+```ts
+const client = createCoreRpcClient(STACKS_TESTNET, {
+  headers: { "x-api-key": process.env.STACKS_API_KEY },
+});
+```
+
 ## Example RPC Calls
 
 Every call through `client.request()` is fully typed — the path autocompletes

@@ -1,4 +1,4 @@
-# @stacks/core-rpc-client
+# @stacks/rpc-client
 
 Typed JavaScript/TypeScript client for the Stacks core RPC API.
 
@@ -7,7 +7,7 @@ This package is generated from the Stacks core OpenAPI definition and ships as E
 ## Install
 
 ```bash
-npm install @stacks/core-rpc-client
+npm install @stacks/rpc-client
 ```
 
 ## Runtime and Development Targets
@@ -18,7 +18,7 @@ npm install @stacks/core-rpc-client
 ## Quick Start
 
 ```ts
-import { createCoreRpcClient } from "@stacks/core-rpc-client";
+import { createCoreRpcClient } from "@stacks/rpc-client";
 
 const client = createCoreRpcClient({
   baseUrl: "http://localhost:20443",
@@ -36,7 +36,7 @@ reuse an existing network configuration without duplicating the base URL or
 custom fetch:
 
 ```ts
-import { createCoreRpcClient } from "@stacks/core-rpc-client";
+import { createCoreRpcClient } from "@stacks/rpc-client";
 import { STACKS_TESTNET } from "@stacks/network";
 
 const client = createCoreRpcClient(STACKS_TESTNET);
@@ -49,6 +49,28 @@ still deriving everything else from the network:
 ```ts
 const client = createCoreRpcClient(STACKS_TESTNET, {
   authToken: process.env.STACKS_RPC_AUTH_TOKEN,
+});
+```
+
+## Custom Headers
+
+Use the `headers` option to attach an API key or any other custom headers to
+every outgoing request:
+
+```ts
+const client = createCoreRpcClient({
+  baseUrl: "https://api.hiro.so",
+  headers: {
+    "x-api-key": process.env.STACKS_API_KEY,
+  },
+});
+```
+
+This also works alongside `@stacks/network`:
+
+```ts
+const client = createCoreRpcClient(STACKS_TESTNET, {
+  headers: { "x-api-key": process.env.STACKS_API_KEY },
 });
 ```
 
@@ -110,7 +132,7 @@ All response schemas are re-exported as named types so you can annotate your own
 code without reaching into the generated schema:
 
 ```ts
-import type { NodeInfo, PoxInfo, AccountData } from "@stacks/core-rpc-client";
+import type { NodeInfo, PoxInfo, AccountData } from "@stacks/rpc-client";
 
 function summarize(info: NodeInfo, pox: PoxInfo): string {
   return `tip=${info.stacks_tip_height} cycle=${pox.reward_cycle_id}`;
@@ -120,7 +142,7 @@ function summarize(info: NodeInfo, pox: PoxInfo): string {
 You can also derive the response type for any endpoint using `CoreRpcResponse`:
 
 ```ts
-import type { CoreRpcResponse } from "@stacks/core-rpc-client";
+import type { CoreRpcResponse } from "@stacks/rpc-client";
 
 type PoxResponse = CoreRpcResponse<"GET", "/v2/pox">;
 ```
@@ -130,7 +152,7 @@ type PoxResponse = CoreRpcResponse<"GET", "/v2/pox">;
 Failed requests throw a `CoreRpcError` with structured metadata:
 
 ```ts
-import { CoreRpcError, createCoreRpcClient } from "@stacks/core-rpc-client";
+import { CoreRpcError, createCoreRpcClient } from "@stacks/rpc-client";
 
 const client = createCoreRpcClient();
 
@@ -163,7 +185,7 @@ console.log(response.headers.get("x-request-id"));
 ## Usage (CJS)
 
 ```js
-const { createCoreRpcClient } = require("@stacks/core-rpc-client");
+const { createCoreRpcClient } = require("@stacks/rpc-client");
 
 const client = createCoreRpcClient({
   baseUrl: "http://localhost:20443",

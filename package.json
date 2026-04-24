@@ -1,9 +1,13 @@
 {
   "name": "@stacks/rpc-client",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Typed JavaScript/TypeScript client for Stacks core RPC endpoints.",
   "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stx-labs/stacks-core-rpc-client.git"
+  },
   "main": "./dist/cjs/index.js",
   "types": "./dist/esm/index.d.ts",
   "exports": {
